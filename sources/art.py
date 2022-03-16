@@ -3,7 +3,7 @@ import random
 
 
 class ArtSource:
-    name = "Ascii Art"
+    name = "Baudot Art"
 
     def update(self, ttyc=None, src_changed=None):
         data = ""
