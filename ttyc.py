@@ -2,6 +2,7 @@ from email.policy import default
 from time import sleep
 from serial import Serial
 from sources import NewsSource
+from sources import HistorySource
 from sources import ArtSource
 from sources import WeatherSource
 from sources import TutorialSource
@@ -14,7 +15,13 @@ class TeletypeController:
     _serial: Serial = None
     _tty_baud = 0
     _dial: Dial = None
-    _sources = [TutorialSource(), NewsSource(), WeatherSource(), ArtSource()]
+    _sources = [
+        TutorialSource(),
+        NewsSource(),
+        HistorySource(),
+        WeatherSource(),
+        ArtSource(),
+    ]
     _source_idx = 0
     _source_changed = True
     _break = False
@@ -23,7 +30,7 @@ class TeletypeController:
     def dial_begin(self):
         self._dialing = True
         self._break = True
-        self.print("\n\n", override=True)
+        self.print("\n\n", override=True, bitbang=False)
 
     def dial_end(self, digit):
         self._dialing = False
@@ -51,17 +58,20 @@ class TeletypeController:
         # tutorial
         self._sources[0].ttyc = self
 
-    def print(self, text: str, override=False):
+    def print(self, text: str, override=False, bitbang=True):
         for char in text:
             if self._break and not override:
                 self._break = False
                 return
             c = str(char).replace("'", '"').replace("_", "-").replace("|", "!")
             self._serial.write(c.encode("ascii"))
-            if c == "\r" or c == "\n":
-                sleep(4 / self._tty_baud)
-            else:
-                sleep(1 / self._tty_baud)
+            self._serial.read()
+
+            # if bitbang:
+            #     if c == "\r" or c == "\n":
+            #         sleep(4 / self._tty_baud)
+            #     else:
+            #         sleep(1 / self._tty_baud)
 
     def begin(self):
         while True:
@@ -70,6 +80,11 @@ class TeletypeController:
             text = self.current_source.update(
                 ttyc=self, src_changed=self._source_changed
             )
+
+            # self._source_changed = False
+            # for c in text:
+            #     self.print(c)
+
             self._source_changed = False
             self.print(text)
             if self._source_idx == 0:

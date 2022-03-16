@@ -1,14 +1,20 @@
+from datetime import datetime
+import tty
 import requests
 from time import sleep
 from decouple import config
 import textwrap
 import xml.etree.ElementTree as ET
 
+language = "en"
+d_type = "selected"
+today = datetime.now()
 
-class WeatherSource:
-    name = "Current Weather"
 
-    _feedUrl = "https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&stationString=KBFI&hoursBeforeNow=2"
+class HistorySource:
+    name = "Today In History"
+
+    _feedUrl = f"https://api.wikimedia.org/feed/v1/wikipedia/{language}/onthisday/{d_type}/{today.month:0>2}/{today.day:0>2}"
 
     _loops = 0
     _loops_max = 15
@@ -20,22 +26,24 @@ class WeatherSource:
         if (self._loops > self._loops_max) or src_changed:
             self._loops = 0
             try:
-                ttyc.print("Fetching the latest weather...\n", override=True)
+                ttyc.print("Fetching On This Day from Wikimedia...\n", override=True)
                 req = requests.get(self._feedUrl, timeout=5)
                 if not req.ok:
                     raise Exception(
-                        "Weather Machine Breaky, Got status " + req.status_code
+                        "History Machine Breaky, Got status " + req.status_code
                     )
 
-                root = ET.fromstring(req.text)
-
-                data = textwrap.fill(root.find("./data/METAR/raw_text").text, width=70)
-                data += "\n\n"
+                root = req.json()
+                self._data = ""
+                for element in root[d_type]:
+                    year = element["year"]
+                    headline = textwrap.fill(element["text"], width=70)
+                    self._data += f"{today:%d %b} {year}\n{headline}\n\n"
 
             except Exception as e:
                 print(e)
                 ttyc.print(
-                    f"Error fetching weather :(\nRetrying in {self._retry} seconds"
+                    f"Error fetching history :(\nRetrying in {self._retry} seconds"
                 )
                 for i in range(self._retry):
                     ttyc.print(".".encode("ascii"))

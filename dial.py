@@ -37,7 +37,7 @@ class Dial:
         self._count += 1
         # print("pulse")
         # print(f"D: v | {time.time_ns() - self.__t}us")
-        time.sleep(0.001)
+        # time.sleep(0.001 / 2)
         pass
 
     def _dial_up(self):
