@@ -1,0 +1,4 @@
+decouple
+gpiozero
+pyserial
+requests
