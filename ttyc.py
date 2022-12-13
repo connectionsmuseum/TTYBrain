@@ -1,4 +1,3 @@
-from email.policy import default
 from time import sleep
 from serial import Serial
 from sources import NewsSource
