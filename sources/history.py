@@ -1,5 +1,4 @@
 from datetime import datetime
-import tty
 import requests
 from time import sleep
 from decouple import config
