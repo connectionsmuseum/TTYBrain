@@ -9,7 +9,9 @@ import xml.etree.ElementTree as ET
 class NewsSource:
     name = "Current News"
 
-    _feedUrl = "http://rss.cnn.com/rss/cnn_latest.rss"
+    # this link requests a custom RSS feed from Google which includes articles containing a URL published within the last 24 hours
+    # we're using AP because the main Teletype we demo is labeled "Associated Press"
+    _feedUrl = "https://news.google.com/rss/search?q=when:24h+allinurl:apnews.com&hl=en-US&gl=US&ceid=US:en"
 
     _loops = 0
     _loops_max = 15
@@ -21,7 +23,7 @@ class NewsSource:
         if (self._loops > self._loops_max) or src_changed:
             self._loops = 0
             try:
-                ttyc.print("Fetching news from CNN...\n", override=True)
+                ttyc.print("Fetching news from the Associated Press...\n", override=True)
                 req = requests.get(self._feedUrl, timeout=5)
                 if not req.ok:
                     raise Exception(
@@ -30,7 +32,7 @@ class NewsSource:
 
                 root = ET.fromstring(req.text)
 
-                self._data = "Latest News from CNN:\n"
+                self._data = "Latest News from the Associated Press:\n"
                 for item in root.findall("./channel/item"):
                     pubDate = item.find("pubDate").text
                     title = textwrap.fill(item.find("title").text, width=70)
