@@ -35,8 +35,8 @@ class NewsSource:
                 self._data = "Latest News from the Associated Press:\n"
                 for item in root.findall("./channel/item"):
                     pubDate = item.find("pubDate").text
-                    # truncate the last 23 characters from the title since it will always say " - The Associated Press"
-                    title = textwrap.fill(item.find("title").text[:-23], width=70)
+                    # truncate the last 10 characters from the title since it will always say " - AP News"
+                    title = textwrap.fill(item.find("title").text[:-10], width=70)
 
                     self._data += f"{pubDate}\n{title}\n\n"
 
