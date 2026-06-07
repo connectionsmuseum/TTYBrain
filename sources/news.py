@@ -11,7 +11,7 @@ class NewsSource:
 
     # this link requests a custom RSS feed from Google which includes articles containing a URL published within the last 24 hours
     # we're using AP because the main Teletype we demo is labeled "Associated Press"
-    _feedUrl = "https://news.google.com/rss/search?q=when:24h+allinurl:apnews.com&hl=en-US&gl=US&ceid=US:en"
+    _feedUrl = "https://news.google.com/rss/search?q=when:24h+site:apnews.com&hl=en-US&gl=US&ceid=US:en"
 
     _loops = 0
     _loops_max = 15
