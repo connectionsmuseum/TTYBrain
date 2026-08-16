@@ -37,6 +37,9 @@ class NewsSource:
                     pubDate = item.find("pubDate").text
                     # truncate the last 10 characters from the title since it will always say " - AP News"
                     title = textwrap.fill(item.find("title").text[:-10], width=70)
+                    # skip if title is too short (to filter out category pages appearing in search results)
+                    if(len(title) < 50):
+                        continue
 
                     self._data += f"{pubDate}\n{title}\n\n"
 
